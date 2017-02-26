@@ -2,17 +2,30 @@
 <html>
 <head>
   <title>lacabra</title>
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-  <div id="viewport-wrapper">
-    <canvas id="viewport"></canvas>
+
+<div id="application">
+  <div id="west">
+    <div id="viewport-wrapper">
+      <canvas id="viewport"></canvas>
+    </div>
+    <div id="south">
+      <div id="tools"></div>
+      <div id="graph-wrapper">
+        <canvas id="graph" width="300" height="200"></canvas>
+      </div>
+    </div>
   </div>
-  <div id="graph-wrapper">
-    <canvas id="graph" width="300" height="200"></canvas>
-  </div>
-  <script type="text/javascript" src="./lacabra.js"></script>
+  <div id="properties"></div>
+</div>
+
+  <script type="text/javascript" src="node.js"></script>
+  <script type="text/javascript" src="graph.js"></script>
+  <script type="text/javascript" src="viewport.js"></script>
+  <script type="text/javascript" src="lacabra.js"></script>
 </body>
 
 </html>
