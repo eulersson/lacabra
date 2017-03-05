@@ -45,7 +45,13 @@ Graph.prototype.initialize = function() {
     this.dragging = false;
   }
 
+  var newNodeCallback = function() {
+    var newNode = new Node('C', 500, 200, 75, 35);
+    this.addNode(newNode);
+  }
+
   this.canvas.addEventListener('mousemove', mouseMoveCallback.bind(this));
+  document.getElementById('add-node').addEventListener('click', newNodeCallback.bind(this));
   window.onresize = resizeCallback.bind(this);
   this.canvas.onmousedown = mouseDownCallback.bind(this);
   this.canvas.onmouseup   = mouseUpCallback.bind(this);
@@ -65,6 +71,7 @@ Graph.prototype.update = function() {
       this.startY = this.mouseY;
     } else {
       this.nodes.forEach(function(node) {
+        node.isPulling(this.mouseX, this.mouseY);
         if (node.isHit(this.mouseX, this.mouseY)) {
           console.log("shit, i hit something!");
           this.activeNode = node;
@@ -88,4 +95,8 @@ Graph.prototype.draw = function() {
 
 Graph.prototype.addNode = function(node) {
   this.nodes.push(node);
+  var newDiv = document.createElement("div"); 
+  var newContent = document.createTextNode("Hi"); 
+  newDiv.appendChild(newContent);
+  document.getElementById('properties').appendChild(newDiv);
 }

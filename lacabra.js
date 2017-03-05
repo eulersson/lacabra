@@ -1,9 +1,9 @@
 var graph = new Graph('graph');
 graph.initialize();
-var node = new Node(10, 10, 70, 70);
-graph.addNode(node);
-var node1 = new Node ( 100, 100, 30, 30);
-graph.addNode(node1);
+var A = new Node('A', 100, 100, 70, 35);
+graph.addNode(A);
+var B = new Node('B', 300, 100, 70, 35);
+graph.addNode(B);
 
 setInterval(function() {
   graph.update();
