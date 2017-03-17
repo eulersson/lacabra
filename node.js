@@ -6,6 +6,7 @@ function Node(label, x, y, w, h, color) {
   this.w = w;
   this.h = h;
   this.moving = false;
+  this.beingPulled = false;
 }
 
 Node.prototype.move = function(dx, dy) {
@@ -26,28 +27,50 @@ Node.prototype.isHit = function(x, y) {
   }
 }
 
-Node.prototype.isPulling = function(x, y) {
+Node.prototype.inputHit = function (x, y) { 
   var left = this.x - 5;
   var right = this.x + 5;
   var top = this.y + this.h / 2 - 5;
   var bottom = this.y + this.h / 2 + 5;
 
   if (x > left && x < right && y > top && y < bottom) {
-    console.log("Pulling INPUT");
+    return true;
+  }
+}
+
+Node.prototype.outputHit = function (x, y) { 
+  var left = this.x + this.w - 5;
+  var right = right = this.x + this.w + 5;
+  var top = this.y + this.h / 2 - 5;
+  var bottom = this.y + this.h / 2 + 5;
+
+  if (x > left && x < right && y > top && y < bottom) {
+    return true;
+  }
+}
+
+Node.prototype.handleHit = function (x, y) { 
+  var left = this.x - 5;
+  var right = this.x + 5;
+  var top = this.y + this.h / 2 - 5;
+  var bottom = this.y + this.h / 2 + 5;
+
+    if (x > left && x < right && y > top && y < bottom) {
+    return true;
   }
 
   left = this.x + this.w - 5;
   right = this.x + this.w + 5;
 
   if (x > left && x < right && y > top && y < bottom) {
-    console.log("Pulling OUTPUT");
+    return true;
   }
 }
 
 Node.prototype.draw = function(ctx) {
   ctx.fillStyle = this.color;
   ctx.fillRect(this.x, this.y, this.w, this.h);
-  ctx.fillStyle = '#8944AA';
+  ctx.fillStyle = '#447';
   ctx.fillRect(this.x - 5, this.y + this.h / 2 - 5, 10, 10);
   ctx.fillRect(this.x + this.w - 5, this.y + this.h / 2 - 5, 10, 10);
   ctx.font = "24px Arial";
