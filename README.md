@@ -1,2 +1,2 @@
 # lacabra
-A node-based SDF modelling experiment
+A node-based SDF modelling experiment.

@@ -48,7 +48,6 @@ function Graph(id) {
 /**
  * Prepares the graph by setting dimensions, context to draw to, and event
  * handlers  for the clicks and drags.
- * @memberof Graph
  */
 Graph.prototype.initialize = function() {
   this.canvas = document.getElementById(this.id);
@@ -123,6 +122,9 @@ Graph.prototype.initialize = function() {
   );
 }
 
+/**
+ * Handles all the logic for when a node or any of its handles is dragged.
+ */
 Graph.prototype.update = function() {
   if (this.mousePressed) {
     if (!this.dragging) {
@@ -164,6 +166,10 @@ Graph.prototype.update = function() {
   }
 }
 
+/**
+ * Draws the graph and all its contents: nodes, connections, grid...
+ * @todo Draw a dim grid.
+ */
 Graph.prototype.draw = function() {
   this.ctx.fillStyle = this.color;
   this.ctx.fillRect(0, 0, this.width, this.height);
@@ -199,6 +205,10 @@ Graph.prototype.draw = function() {
   }
 }
 
+/**
+ * Every time a new node needs to be created is appended in the nodes member of
+ * the graph so it can be drawn and interacted with.
+ */
 Graph.prototype.addNode = function(node) {
   this.nodes.push(node);
   var newDiv = document.createElement("div"); 
