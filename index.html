@@ -3,6 +3,7 @@
 <head>
   <title>lacabra</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="font/flaticon.css">
 </head>
 
 <body>
@@ -14,14 +15,18 @@
     </div>
     <div id="south">
       <div id="tools">
-        <button id="add-node">+</button>
+        <div class="tool cube" id="tool-cube"><i class="flaticon-3d"></i></div>
+        <div class="tool sphere" id="tool-sphere"><i class="flaticon-sphere"></i></div>
+        <div class="tool transform" id="tool-transform"><i class="flaticon-transform-text"></i></div>
+        <div class="tool camera" id="tool-camera"><i class="flaticon-video-camera"></i></div>
+
       </div>
       <div id="graph-wrapper">
         <canvas id="graph"></canvas>
       </div>
     </div>
   </div>
-  <div id="properties"></div>
+  <div id="properties"><button id="add-node">+</button></div>
 </div>
 
   <script type="text/javascript" src="node.js"></script>

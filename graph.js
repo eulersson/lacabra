@@ -50,6 +50,7 @@ function Graph(id) {
  * handlers  for the clicks and drags.
  */
 Graph.prototype.initialize = function() {
+  console.log("fff");
   this.canvas = document.getElementById(this.id);
 
   this.canvas.style.width = `${this.canvas.parentNode.offsetWidth}px`;

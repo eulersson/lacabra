@@ -36,9 +36,48 @@ html, body {
 
 #tools {
   height: 100%;
-  width: 40px;
-  background: #222;
+  background: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
+
+.tool {
+  padding: 5px;
+}
+
+div#tool-cube {
+  background: #bf3c3c;
+}
+
+#tool-cube:hover {
+  background: #df5c5c;
+}
+
+#tool-sphere {
+  background: #64a786;
+}
+
+#tool-sphere:hover {
+  background-color: #84c7A6;
+}
+
+#tool-transform {
+  background: #afd076;
+}
+
+#tool-transform:hover {
+  background: #cff096;
+}
+
+#tool-camera {
+  background: #bba256;
+}
+
+#tool-camera:hover {
+  background: #dbc276;
+}
+
 
 #graph-wrapper {
   flex: 1;
