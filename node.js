@@ -26,6 +26,11 @@ Node.prototype.move = function(dx, dy) {
   this.y += dy;
 }
 
+Node.prototype.resize = function(w, h) {
+  this.w = w;
+  this.h = h;
+}
+
 /**
  * Returns a boolean to determine of the x, y, mouse position hits the node.
  */
@@ -45,11 +50,13 @@ Node.prototype.isHit = function(x, y) {
 /**
  * Checks if the position x, y in the canvas hits or misses the input handle.
  */
-Node.prototype.inputHit = function (x, y) { 
-  var left = this.x - 5;
-  var right = this.x + 5;
-  var top = this.y + this.h / 2 - 5;
-  var bottom = this.y + this.h / 2 + 5;
+Node.prototype.inputHit = function (x, y) {
+  var inputW = this.h / 3.5;
+  var inputH = this.h / 3.5;
+  var left = this.x - inputW / 2;
+  var right = this.x + inputW / 2;
+  var top = this.y + this.h / 2 - inputH / 2;
+  var bottom = this.y + this.h / 2 + inputH / 2;
 
   if (x > left && x < right && y > top && y < bottom) {
     return true;
@@ -59,11 +66,33 @@ Node.prototype.inputHit = function (x, y) {
 /**
  * Checks if the position x, y in the canvas hits or misses the output handle.
  */
-Node.prototype.outputHit = function (x, y) { 
-  var left = this.x + this.w - 5;
-  var right = right = this.x + this.w + 5;
-  var top = this.y + this.h / 2 - 5;
-  var bottom = this.y + this.h / 2 + 5;
+Node.prototype.outputHit = function (x, y) {
+  var outputW = this.h / 3.5;
+  var outputH = this.h / 3.5;
+  var left = this.x + this.w - outputW / 2;
+  var right = right = this.x + this.w + outputW / 2;
+  var top = this.y + this.h / 2 - outputH / 2;
+  var bottom = this.y + this.h / 2 + outputH / 2;
+
+  if (x > left && x < right && y > top && y < bottom) {
+    return true;
+  }
+}
+
+Node.prototype.handleHit = function (x, y) {
+  var handleW = this.h / 3.5;
+  var handleH = this.h / 3.5;
+  var left = this.x - handleW / 2;
+  var right = this.x + handleW / 2;
+  var top = this.y + this.h / 2 - handleH / 2;
+  var bottom = this.y + this.h / 2 + handleH / 2;
+
+    if (x > left && x < right && y > top && y < bottom) {
+    return true;
+  }
+
+  left = this.x + this.w - handleW / 2;
+  right = this.x + this.w + handleW / 2;
 
   if (x > left && x < right && y > top && y < bottom) {
     return true;
@@ -77,9 +106,12 @@ Node.prototype.draw = function(ctx) {
   ctx.fillStyle = this.color;
   ctx.fillRect(this.x, this.y, this.w, this.h);
   ctx.fillStyle = '#447';
-  ctx.fillRect(this.x - 5, this.y + this.h / 2 - 5, 10, 10);
-  ctx.fillRect(this.x + this.w - 5, this.y + this.h / 2 - 5, 10, 10);
-  ctx.font = "24px Arial";
+  var handleW = this.h / 3.5;
+  var handleH = this.h / 3.5;
+  ctx.fillRect(this.x - handleW / 2, this.y + this.h / 2 - handleH / 2, handleW, handleH);
+  ctx.fillRect(this.x + this.w - handleW / 2, this.y + this.h / 2 - handleH / 2, handleW, handleH);
+  var fontSize = this.h / 35 * 24;
+  ctx.font = fontSize + "px Arial";
   ctx.textAlign = "center";
-  ctx.fillText(this.label, this.x + this.w / 2, this.y + this.h / 2 + 8);
+  ctx.fillText(this.label, this.x + this.w / 2, this.y + this.h / 2 + fontSize / 3);
 }

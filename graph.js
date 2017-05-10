@@ -26,6 +26,8 @@
  * @property {obejct} pullLink Contains <code>from</code> and <code>to</code>
  * properties used for drawing links between inputs/outputs. It also has the
  * <code>type</code> property that can be either **inwards** or **outwards**.
+ * @property {nodes} zoomFactor Determines the size of new nodes and the size of
+ * links. zoomFactor is changed when the mouse wheel scrolls.
  */
 function Graph(id) {
   this.id = id;
@@ -43,6 +45,7 @@ function Graph(id) {
   this.activeNode = null;
   this.dragging = false;
   this.pullLink = null;
+  this.zoomFactor = 1;
 }
 
 /**
@@ -106,10 +109,31 @@ Graph.prototype.initialize = function() {
     this.pullLink = null;
   }
 
+  var mouseWheelCallback = function (wheelEvent) {
+    
+    if (wheelEvent.deltaY > 0) {
+      var muliplier = 0.9;
+    } else {
+      var muliplier = 1 / 0.9;
+    }
+    
+    this.zoomFactor *= muliplier;
+    
+    this.nodes.forEach(function(node, i) {
+      var w = node.w * muliplier;
+      var h = node.h * muliplier;
+      node.resize(w, h);
+      var dx = this.mouseX + (node.x - this.mouseX) * muliplier - node.x;
+      var dy = this.mouseY + (node.y - this.mouseY) * muliplier - node.y;
+      node.move(dx, dy);
+    }, this);
+    
+  }
+
   var newNodeCallback = function () {
     var alphabet = "ABCDEFGHIJKLMNOPQRSTUVXYZ";
     var randomLetter = alphabet[(Math.floor(Math.random() * alphabet.length))];
-    var newNode = new Node(randomLetter, 500, 200, 75, 35);
+    var newNode = new Node(randomLetter, 500, 200, 75 * this.zoomFactor, 35 * this.zoomFactor);
     this.addNode(newNode);
   }
 
@@ -117,6 +141,7 @@ Graph.prototype.initialize = function() {
   this.canvas.addEventListener('mousemove', mouseMoveCallback.bind(this));
   this.canvas.onmousedown = mouseDownCallback.bind(this);
   this.canvas.onmouseup = mouseUpCallback.bind(this);
+  this.canvas.onwheel = mouseWheelCallback.bind(this);
   document.getElementById('add-node').addEventListener(
     'click',
     newNodeCallback.bind(this)
@@ -188,7 +213,7 @@ Graph.prototype.draw = function() {
     this.ctx.moveTo(from.x, from.y);
     this.ctx.lineTo(to.x, to.y);
     this.ctx.strokeStyle = '#bb4';
-    this.ctx.lineWidth = 4;
+    this.ctx.lineWidth = 4 * this.zoomFactor;
     this.ctx.stroke();
   }, this);
 
@@ -201,7 +226,7 @@ Graph.prototype.draw = function() {
     this.ctx.moveTo(this.pullLink.from.x, this.pullLink.from.y);
     this.ctx.lineTo(this.pullLink.to.x, this.pullLink.to.y);
     this.ctx.strokeStyle = '#bb4';
-    this.ctx.lineWidth = 4;
+    this.ctx.lineWidth = 4 * this.zoomFactor;
     this.ctx.stroke();
   }
 }
