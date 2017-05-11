@@ -4,10 +4,10 @@ var breakingThreshold = 200.0;
 /** 
  * Helper function that compiles a shader.
  * @function
- * @param {object} gl WebGL context extracted from the canvas.
+ * @param {WebGLRenderingContext} gl WebGL context extracted from the canvas.
  * @param {enum} type Can be gl.VERTEX_SHADER or gl.FRAGMENT_SHADER.
  * @param {string} source GLSL text to compile.
- * @returns {object} Compiled shader.
+ * @returns {WebGLShader} Compiled shader.
  */
 function createShader(gl, type, source) {
   var shader = gl.createShader(type);
@@ -23,10 +23,10 @@ function createShader(gl, type, source) {
 /** 
  * Helper function that links two shaders into a program.
  * @function
- * @param {object} gl WebGL context extracted from the canvas.
- * @param {object} vertexShader Vertex shader.
- * @param {object} fragmentShader Fragment shader.
- * @returns {object} Linked program.
+ * @param {WebGLRenderingContext} gl WebGL context extracted from the canvas.
+ * @param {WebGLShader} vertexShader Vertex shader.
+ * @param {WebGLShader} fragmentShader Fragment shader.
+ * @returns {WebGLProgram} Linked program.
  */
 function createProgram(gl, vertexShader, fragmentShader) {
   var program = gl.createProgram();
@@ -71,11 +71,6 @@ Viewport.prototype.initializeGL = function() {
     "  gl_Position = vec4(position, 0.0, 1.0);" +
     "}";
 
-  /*
-  	vec2 uv = fragCoord.xy / iResolution.xy;
-	fragColor = vec4(uv,0.5+0.5*sin(iGlobalTime),1.0);
-  */ 
-
   var fragSource = 
     "precision mediump float;" +
     "uniform vec2 resolution;" +
@@ -106,8 +101,6 @@ Viewport.prototype.initializeGL = function() {
   gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(quad), gl.STATIC_DRAW);
   gl.viewport(0, 0, this.w, this.h);
-  console.log(this.w);
-  console.log(this.h);
 }
 
 Viewport.prototype.draw = function() {

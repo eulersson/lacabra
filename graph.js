@@ -53,7 +53,6 @@ function Graph(id) {
  * handlers  for the clicks and drags.
  */
 Graph.prototype.initialize = function() {
-  console.log("fff");
   this.canvas = document.getElementById(this.id);
 
   this.canvas.style.width = `${this.canvas.parentNode.offsetWidth}px`;
@@ -91,13 +90,13 @@ Graph.prototype.initialize = function() {
 
           switch (this.pullLink.type) { 
             case 'inwards':
-              if (jnode.outputHit(this.mouseX, this.mouseY) && i !== j) {
+              if (jnode.outputHit(this.mouseX, this.mouseY, this.width, this.height) && i !== j) {
                 this.connections.push([j, i]);
               }
   
               break;
             case 'outwards':
-              if (jnode.inputHit(this.mouseX, this.mouseY) && i !== j) {
+              if (jnode.inputHit(this.mouseX, this.mouseY, this.width, this.height) && i !== j) {
                 this.connections.push([i, j]);
               }
               break;
@@ -110,15 +109,14 @@ Graph.prototype.initialize = function() {
   }
 
   var mouseWheelCallback = function (wheelEvent) {
-    
     if (wheelEvent.deltaY > 0) {
       var muliplier = 0.9;
     } else {
       var muliplier = 1 / 0.9;
     }
-    
+
     this.zoomFactor *= muliplier;
-    
+
     this.nodes.forEach(function(node, i) {
       var w = node.w * muliplier;
       var h = node.h * muliplier;
@@ -127,7 +125,6 @@ Graph.prototype.initialize = function() {
       var dy = this.mouseY + (node.y - this.mouseY) * muliplier - node.y;
       node.move(dx, dy);
     }, this);
-    
   }
 
   var newNodeCallback = function () {
@@ -138,7 +135,7 @@ Graph.prototype.initialize = function() {
   }
 
   window.onresize = resizeCallback.bind(this);  
-  this.canvas.addEventListener('mousemove', mouseMoveCallback.bind(this));
+  this.canvas.onmousemove = mouseMoveCallback.bind(this);
   this.canvas.onmousedown = mouseDownCallback.bind(this);
   this.canvas.onmouseup = mouseUpCallback.bind(this);
   this.canvas.onwheel = mouseWheelCallback.bind(this);
@@ -165,14 +162,14 @@ Graph.prototype.update = function() {
       this.startY = this.mouseY;
     } else {
       this.nodes.forEach(function (node) {
-        if (node.inputHit(this.mouseX, this.mouseY) && !this.pullLink) {
+        if (node.inputHit(this.mouseX, this.mouseY, this.width, this.height) && !this.pullLink) {
           node.beingPulled = true;
           this.pullLink = {
             from: { x: this.mouseX, y: this.mouseY },
             to: { x: this.mouseX, y: this.mouseY },
             type: 'inwards'
           };
-        } else if (node.outputHit(this.mouseX, this.mouseY) && !this.pullLink) {
+        } else if (node.outputHit(this.mouseX, this.mouseY, this.width, this.height) && !this.pullLink) {
           node.beingPulled = true;
           this.pullLink = {
             from: { x: this.mouseX, y: this.mouseY },
@@ -182,7 +179,7 @@ Graph.prototype.update = function() {
         } else if (!!node.beingPulled && !!this.pullLink) {
           this.pullLink.to.x = this.mouseX;
           this.pullLink.to.y = this.mouseY;
-        } else if (node.isHit(this.mouseX, this.mouseY) & !this.pullLink) {
+        } else if (node.isHit(this.mouseX, this.mouseY, this.width, this.height) & !this.pullLink) {
           this.activeNode = node;
         }
       }, this);
@@ -210,16 +207,16 @@ Graph.prototype.draw = function() {
     var from = { x: fromNode.x + fromNode.w, y: fromNode.y + fromNode.h / 2 };
     var to = { x: toNode.x, y: toNode.y + toNode.h / 2 };
 
-    this.ctx.moveTo(from.x, from.y);
-    this.ctx.lineTo(to.x, to.y);
+    this.ctx.moveTo(from.x + this.width / 2, from.y + this.height / 2);
+    this.ctx.lineTo(to.x + this.width / 2, to.y + this.height / 2);
     this.ctx.strokeStyle = '#bb4';
     this.ctx.lineWidth = 4 * this.zoomFactor;
     this.ctx.stroke();
   }, this);
 
   this.nodes.forEach(function(node) {
-    node.draw(ctx);
-  });
+    node.draw(ctx, this.width, this.height);
+  }, this);
 
   if (!!this.pullLink) { 
     this.ctx.beginPath();
@@ -234,6 +231,7 @@ Graph.prototype.draw = function() {
 /**
  * Every time a new node needs to be created is appended in the nodes member of
  * the graph so it can be drawn and interacted with.
+ * @param {Node} node Node to add to the graph.
  */
 Graph.prototype.addNode = function(node) {
   this.nodes.push(node);
