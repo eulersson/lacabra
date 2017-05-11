@@ -45,11 +45,11 @@ Node.prototype.resize = function(w, h) {
  * @param {number} width The graph's width.
  * @param {number} height The graph's height.
  */
-Node.prototype.isHit = function(x, y, width, height) {
-  var left = this.x + width / 2;
-  var right = this.x + width / 2 + this.w;
-  var top = this.y + height / 2;
-  var bottom = this.y + height / 2 +this.h;
+Node.prototype.isHit = function(x, y, width, height, tx, ty) {
+  var left = this.x + width / 2 + tx;
+  var right = this.x + width / 2 + tx + this.w;
+  var top = this.y + height / 2 + ty;
+  var bottom = this.y + height / 2 + ty  + this.h;
 
   if (x > left && x < right && y > top && y < bottom) {
     return true;
@@ -65,13 +65,13 @@ Node.prototype.isHit = function(x, y, width, height) {
  * @param {number} width The graph's width.
  * @param {number} height The graph's height.
  */
-Node.prototype.inputHit = function (x, y, width, height) {
+Node.prototype.inputHit = function (x, y, width, height, tx, ty) {
   var inputW = this.h / 3.5;
   var inputH = this.h / 3.5;
-  var left = this.x + width / 2 - inputW / 2;
-  var right = this.x + width / 2 + inputW / 2;
-  var top = this.y + height / 2 + this.h / 2 - inputH / 2;
-  var bottom = this.y + height / 2 + this.h / 2 + inputH / 2;
+  var left = this.x + width / 2 + tx - inputW / 2;
+  var right = this.x + width / 2 + tx + inputW / 2;
+  var top = this.y + height / 2 + ty + this.h / 2 - inputH / 2;
+  var bottom = this.y + height / 2 + ty + this.h / 2 + inputH / 2;
 
   if (x > left && x < right && y > top && y < bottom) {
     return true;
@@ -85,13 +85,13 @@ Node.prototype.inputHit = function (x, y, width, height) {
  * @param {number} width The graph's width.
  * @param {number} height The graph's height.
  */
-Node.prototype.outputHit = function (x, y, width, height) {
+Node.prototype.outputHit = function (x, y, width, height, tx, ty) {
   var outputW = this.h / 3.5;
   var outputH = this.h / 3.5;
-  var left = this.x + width / 2 + this.w - outputW / 2;
-  var right = this.x + width / 2 + this.w + outputW / 2;
-  var top = this.y + height / 2 + this.h / 2 - outputH / 2;
-  var bottom = this.y + height / 2 + this.h / 2 + outputH / 2;
+  var left = this.x + width / 2 + tx + this.w - outputW / 2;
+  var right = this.x + width / 2 + tx + this.w + outputW / 2;
+  var top = this.y + height / 2 + ty + this.h / 2 - outputH / 2;
+  var bottom = this.y + height / 2 + ty + this.h / 2 + outputH / 2;
 
   if (x > left && x < right && y > top && y < bottom) {
     return true;
@@ -104,16 +104,26 @@ Node.prototype.outputHit = function (x, y, width, height) {
  * @param {number} width The graph's width.
  * @param {number} height The graph's height.
  */
-Node.prototype.draw = function(ctx, width, height) {
+Node.prototype.draw = function(ctx, width, height, tx, ty) {
   ctx.fillStyle = this.color;
-  ctx.fillRect(this.x + width / 2, this.y + height / 2, this.w, this.h);
+  ctx.fillRect(this.x + width / 2 + tx, this.y + height / 2 + ty, this.w, this.h);
   ctx.fillStyle = '#447';
   var handleW = this.h / 3.5;
   var handleH = this.h / 3.5;
-  ctx.fillRect(this.x + width / 2 - handleW / 2, this.y + this.h / 2 + height / 2 - handleH / 2, handleW, handleH);
-  ctx.fillRect(this.x + width / 2 + this.w - handleW / 2, this.y + height / 2 + this.h / 2 - handleH / 2, handleW, handleH);
+  ctx.fillRect(
+    this.x + width / 2 - handleW / 2 + tx,
+    this.y + this.h / 2 + height / 2 - handleH / 2 + ty,
+    handleW,
+    handleH
+  );
+  ctx.fillRect(
+    this.x + width / 2 + this.w - handleW / 2 + tx,
+    this.y + height / 2 + this.h / 2 - handleH / 2 + ty,
+    handleW,
+    handleH
+  );
   var fontSize = this.h / 35 * 24;
   ctx.font = fontSize + "px Arial";
   ctx.textAlign = "center";
-  ctx.fillText(this.label, this.x + width / 2 + this.w / 2, this.y + height / 2 + this.h / 2 + fontSize / 3);
+  ctx.fillText(this.label, this.x + width / 2 + this.w / 2 + tx, this.y + height / 2 + this.h / 2 + fontSize / 3 + ty);
 }

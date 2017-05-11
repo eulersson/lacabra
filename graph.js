@@ -28,6 +28,12 @@
  * <code>type</code> property that can be either **inwards** or **outwards**.
  * @property {nodes} zoomFactor Determines the size of new nodes and the size of
  * links. zoomFactor is changed when the mouse wheel scrolls.
+ * @property {number} trackX The user can track up, down, left and right the 
+ * graph as he was sliding it to see all the nodes in the network. This keeps
+ * track of it as an offset on the horizontal axis.
+  * @property {number} trackY The user can track up, down, left and right the 
+ * graph as he was sliding it to see all the nodes in the network. This keeps
+ * track of it as an offset on the vertical axis.
  */
 function Graph(id) {
   this.id = id;
@@ -46,6 +52,8 @@ function Graph(id) {
   this.dragging = false;
   this.pullLink = null;
   this.zoomFactor = 1;
+  this.trackX = 0;
+  this.trackY = 0;
 }
 
 /**
@@ -90,13 +98,27 @@ Graph.prototype.initialize = function() {
 
           switch (this.pullLink.type) { 
             case 'inwards':
-              if (jnode.outputHit(this.mouseX, this.mouseY, this.width, this.height) && i !== j) {
+              if (jnode.outputHit(
+                this.mouseX,
+                this.mouseY,
+                this.width,
+                this.height,
+                this.trackX,
+                this.trackY) && i !== j
+              ) {
                 this.connections.push([j, i]);
               }
-  
+
               break;
             case 'outwards':
-              if (jnode.inputHit(this.mouseX, this.mouseY, this.width, this.height) && i !== j) {
+              if (jnode.inputHit(
+                this.mouseX,
+                this.mouseY,
+                this.width,
+                this.height,
+                this.trackX,
+                this.trackY) && i !== j
+              ) {
                 this.connections.push([i, j]);
               }
               break;
@@ -161,15 +183,18 @@ Graph.prototype.update = function() {
       this.startX = this.mouseX;
       this.startY = this.mouseY;
     } else {
+      var miss = true;
       this.nodes.forEach(function (node) {
-        if (node.inputHit(this.mouseX, this.mouseY, this.width, this.height) && !this.pullLink) {
+        if (node.inputHit(this.mouseX, this.mouseY, this.width, this.height, this.trackX, this.trackY) && !this.pullLink) {
+          miss = false;
           node.beingPulled = true;
           this.pullLink = {
             from: { x: this.mouseX, y: this.mouseY },
             to: { x: this.mouseX, y: this.mouseY },
             type: 'inwards'
           };
-        } else if (node.outputHit(this.mouseX, this.mouseY, this.width, this.height) && !this.pullLink) {
+        } else if (node.outputHit(this.mouseX, this.mouseY, this.width, this.height, this.trackX, this.trackY) && !this.pullLink) {
+          miss = false;
           node.beingPulled = true;
           this.pullLink = {
             from: { x: this.mouseX, y: this.mouseY },
@@ -177,15 +202,26 @@ Graph.prototype.update = function() {
             type: 'outwards'
           };
         } else if (!!node.beingPulled && !!this.pullLink) {
+          miss = false;
           this.pullLink.to.x = this.mouseX;
           this.pullLink.to.y = this.mouseY;
-        } else if (node.isHit(this.mouseX, this.mouseY, this.width, this.height) & !this.pullLink) {
+        } else if (node.isHit(this.mouseX, this.mouseY, this.width, this.height, this.trackX, this.trackY) & !this.pullLink) {
+          miss = false;
           this.activeNode = node;
         }
       }, this);
+      if (miss) {
+        // Handle the tracking
+        this.trackX += this.mouseX - this.startX;
+        this.trackY += this.mouseY - this.startY;
+
+        this.startX = this.mouseX;
+        this.startY = this.mouseY;
+      }
     }
   } else {
     this.activeNode = null;
+    miss = false;
   }
 }
 
@@ -207,15 +243,21 @@ Graph.prototype.draw = function() {
     var from = { x: fromNode.x + fromNode.w, y: fromNode.y + fromNode.h / 2 };
     var to = { x: toNode.x, y: toNode.y + toNode.h / 2 };
 
-    this.ctx.moveTo(from.x + this.width / 2, from.y + this.height / 2);
-    this.ctx.lineTo(to.x + this.width / 2, to.y + this.height / 2);
+    this.ctx.moveTo(
+      from.x + this.width / 2 + this.trackX,
+      from.y + this.height / 2 + this.trackY
+    );
+    this.ctx.lineTo(
+      to.x + this.width / 2 + this.trackX,
+      to.y + this.height / 2 + this.trackY
+    );
     this.ctx.strokeStyle = '#bb4';
     this.ctx.lineWidth = 4 * this.zoomFactor;
     this.ctx.stroke();
   }, this);
 
   this.nodes.forEach(function(node) {
-    node.draw(ctx, this.width, this.height);
+    node.draw(ctx, this.width, this.height, this.trackX, this.trackY);
   }, this);
 
   if (!!this.pullLink) { 
